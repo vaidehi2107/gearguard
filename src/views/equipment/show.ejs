@@ -1,0 +1,57 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h4 class="mb-0">
+                    <%= equipment.name %> 
+                    <% if(!equipment.isUsable) { %>
+                        <span class="badge bg-danger ms-2">SCRAPPED / UNUSABLE</span>
+                    <% } else { %>
+                        <span class="badge bg-success ms-2">OPERATIONAL</span>
+                    <% } %>
+                </h4>
+
+                <a href="/maintenance?equipmentId=<%= equipment._id %>" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wrench-adjustable" viewBox="0 0 16 16">
+                        <path d="M16 4.5a4.492 4.492 0 0 1-1.703 3.526L13 5l2.959-1.11c.027.2.041.403.041.61Z"/>
+                        <path d="M11.5 9c.653 0 1.2-.433 1.387-1.023L11 9h.5ZM8 10a2 2 0 0 1-2-2V7a2 2 0 1 1 4 0v1a2 2 0 0 1-2 2Z"/>
+                    </svg>
+                    <span>Maintenance</span>
+                    <span class="badge bg-primary rounded-pill ms-1"><%= maintenanceCount %></span>
+                </a>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Serial Number:</strong> <%= equipment.serialNumber %></p>
+                        <p><strong>Department:</strong> <%= equipment.department %></p>
+                        <p><strong>Location:</strong> <%= equipment.location %></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Responsible Team:</strong> <%= equipment.maintenanceTeam ? equipment.maintenanceTeam.teamName : 'None' %></p>
+                        <p><strong>Assigned Technician:</strong> <%= equipment.technician ? equipment.technician.name : 'Unassigned' %></p>
+                        <p><strong>Purchase Date:</strong> <%= equipment.purchaseDate ? equipment.purchaseDate.toDateString() : 'N/A' %></p>
+                    </div>
+                </div>
+                <hr>
+                <h6>Warranty Information</h6>
+                <p class="text-muted"><%= equipment.warrantyInfo || 'No warranty details provided.' %></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h5 class="card-title">Need a Repair?</h5>
+                <p class="small text-muted">Create a new maintenance request specifically for this machine.</p>
+                <a href="/maintenance/new?equipmentId=<%= equipment._id %>" class="btn btn-dark w-100">
+                    Request Maintenance
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

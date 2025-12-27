@@ -1,0 +1,35 @@
+<% layout('layouts/boilerplate') %>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow p-4">
+            <h3>New Maintenance Request</h3>
+            <form action="/maintenance" method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Subject</label>
+                    <input type="text" name="subject" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Equipment</label>
+                    <select name="equipment" class="form-select">
+                        <% for(let item of equipment) { %>
+                            <option value="<%= item._id %>"><%= item.name %> (<%= item.serialNumber %>)</option>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Request Type</label>
+                    <select name="requestType" class="form-select">
+                        <option value="Corrective">Corrective (Repair)</option>
+                        <option value="Preventive">Preventive (Planned)</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Scheduled Date</label>
+                    <input type="date" name="scheduledDate" class="form-control" required>
+                    <div class="form-text">Required for Preventive maintenance scheduling.</div>
+                </div>
+                <button class="btn btn-success w-100">Create Request</button>
+            </form>
+        </div>
+    </div>
+</div>

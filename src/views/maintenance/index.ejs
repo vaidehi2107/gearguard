@@ -1,0 +1,83 @@
+<% layout('layouts/boilerplate') %>
+
+<% if (typeof query !== 'undefined' && query.error === 'scrapped') { %>
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+        <strong>Action Denied!</strong> This equipment has been officially marked as <strong>SCRAPPED</strong> and is no longer usable. No further stage changes are allowed.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="fw-bold">Maintenance Kanban</h1>
+        <p class="text-muted">Manage breakdown repairs and preventive schedules.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/maintenance/calendar" class="btn btn-outline-primary">View Calendar</a>
+        <a href="/maintenance/new" class="btn btn-primary">+ Create Request</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <% const allStages = ['New', 'In Progress', 'Repaired', 'Scrap'] %>
+    <% for(let s of allStages) { %>
+        <div class="col-md-3">
+            <div class="kanban-col p-2 bg-light rounded border shadow-sm" style="min-height: 75vh;">
+                <h5 class="text-center text-uppercase fw-bold text-secondary py-2 m-0"><%= s %></h5>
+                <hr class="mt-1 mb-3">
+                
+                <% for(let task of requests.filter(r => r.stage === s)) { %>
+                    <% 
+                       // OVERDUE LOGIC: Not Repaired/Scrapped AND date has passed
+                       const isOverdue = task.scheduledDate && 
+                                         new Date(task.scheduledDate) < new Date() && 
+                                         !['Repaired', 'Scrap'].includes(task.stage);
+                    %>
+                    
+                    <div class="kanban-card mb-3 p-3 bg-white border-start border-4 shadow-sm 
+                        <%= task.requestType === 'Corrective' ? 'border-danger' : 'border-primary' %>"
+                        style="<%= isOverdue ? 'background-color: #fffafa; border: 1px solid #dc3545;' : '' %>">
+                        
+                        <% if(isOverdue) { %>
+                            <span class="badge bg-danger mb-2">⚠️ OVERDUE</span>
+                        <% } %>
+
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h6 class="fw-bold mb-1"><%= task.subject %></h6>
+                        </div>
+
+                        <p class="small text-muted mb-1">
+                            <strong>Equip:</strong> <%= task.equipment ? task.equipment.name : 'Unknown' %>
+                        </p>
+                        
+                        <p class="small mb-3">
+                            <strong>Date:</strong> 
+                            <span class="<%= isOverdue ? 'text-danger fw-bold' : 'text-muted' %>">
+                                <%= task.scheduledDate ? task.scheduledDate.toDateString() : 'N/A' %>
+                            </span>
+                        </p>
+                        
+                        <form action="/maintenance/<%= task._id %>/stage?_method=PATCH" method="POST">
+                            <select name="stage" onchange="this.form.submit()" 
+                                    class="form-select form-select-sm" 
+                                    <%= (task.stage === 'Scrap' || (task.equipment && !task.equipment.isUsable)) ? 'disabled' : '' %>>
+                                <% for(let stageOpt of allStages) { %>
+                                    <option value="<%= stageOpt %>" <%= task.stage === stageOpt ? 'selected' : '' %>>
+                                        <%= stageOpt %>
+                                    </option>
+                                <% } %>
+                            </select>
+                        </form>
+                        
+                        <% if(task.stage === 'Scrap') { %>
+                            <div class="mt-2 text-center">
+                                <span class="badge bg-dark w-100 py-2"><i class="bi bi-lock-fill me-1"></i> LOCKED: SCRAPPED</span>
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
+</div>

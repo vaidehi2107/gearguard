@@ -1,0 +1,28 @@
+<% layout('layouts/boilerplate') %>
+<h1>Maintenance Calendar</h1>
+<p class="text-muted">Displaying all Preventive Maintenance Tasks </p>
+
+<div class="card shadow-sm p-4">
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Equipment</th>
+                    <th>Subject</th>
+                    <th>Scheduled Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let req of requests) { %>
+                    <tr>
+                        <td><%= req.equipment.name %></td>
+                        <td><%= req.subject %></td>
+                        <td><%= req.scheduledDate ? req.scheduledDate.toDateString() : 'N/A' %></td>
+                        <td><span class="badge bg-info"><%= req.stage %></span></td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
